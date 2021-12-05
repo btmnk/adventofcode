@@ -1,4 +1,4 @@
-const { input } = require("../task1input.json");
+const { input } = require("../input.json");
 
 input.forEach((first, firstIndex) => {
   input.forEach((second, secondIndex) => {
