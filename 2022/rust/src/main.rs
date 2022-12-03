@@ -11,6 +11,7 @@ fn main() {
     d2::d2p2::run();
 
     d3::d3p1::run();
+    d3::d3p2::run();
 
     print!("\n");
 }

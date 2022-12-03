@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct Rucksack {
     pub first_compartment: String,
     pub second_compartment: String,
@@ -24,5 +25,17 @@ impl Rucksack {
         } else {
             panic!("Could not find common item type!");
         }
+    }
+
+    pub fn get_all_items(&self) -> Vec<char> {
+        self.first_compartment
+            .chars()
+            .chain(self.second_compartment.chars())
+            .collect()
+    }
+
+    pub fn has_item_type(&self, item_type: &char) -> bool {
+        return self.first_compartment.contains(*item_type)
+            || self.second_compartment.contains(*item_type);
     }
 }
