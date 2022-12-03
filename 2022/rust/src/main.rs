@@ -1,5 +1,6 @@
 mod d1;
 mod d2;
+mod d3;
 mod util;
 
 fn main() {
@@ -8,6 +9,8 @@ fn main() {
 
     d2::d2p1::run();
     d2::d2p2::run();
+
+    d3::d3p1::run();
 
     print!("\n");
 }
