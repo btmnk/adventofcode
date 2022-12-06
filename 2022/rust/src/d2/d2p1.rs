@@ -1,9 +1,9 @@
-use crate::util::{get_puzzle_input, log_result};
+use crate::util::{get_puzzle_input_by_delimiter, log_result};
 
 use super::rock_paper_scissors::{get_game_result, get_shape_by_code, get_shape_score};
 
 pub fn run() {
-    let lines = get_puzzle_input("data/d2.txt", "\n");
+    let lines = get_puzzle_input_by_delimiter("data/d2.txt", "\n");
     let total_score = lines.iter().fold(0, |total, current| {
         let codes: Vec<&str> = current.split(" ").collect();
         let opponent_shape = get_shape_by_code(codes.first().unwrap());

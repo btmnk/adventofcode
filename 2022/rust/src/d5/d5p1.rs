@@ -3,7 +3,7 @@ use crate::util::{self, log_result};
 use super::{parse_instruction::parse_instruction, storage::Storage};
 
 pub fn run() {
-    let instructions = util::get_puzzle_input("data/d5.txt", "\n\n");
+    let instructions = util::get_puzzle_input_by_delimiter("data/d5.txt", "\n\n");
 
     let storage_content = &instructions[0];
     let move_instructions = instructions[1].split("\n").collect::<Vec<&str>>();

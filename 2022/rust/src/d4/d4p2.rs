@@ -3,7 +3,7 @@ use crate::util::{self, log_result};
 use super::camp::Camp;
 
 pub fn run() {
-    let assignments = util::get_puzzle_input("data/d4.txt", "\n");
+    let assignments = util::get_puzzle_input_by_delimiter("data/d4.txt", "\n");
     let partially_or_fully_overlapping_ranges: i32 =
         assignments.iter().fold(0, |sum, assignment| {
             let camp = Camp::from_input(assignment);

@@ -3,7 +3,7 @@ use crate::util::{self, log_result};
 use super::{get_item_type_priority::get_item_type_priority, rucksack::Rucksack};
 
 pub fn run() {
-    let rucksack_contents = util::get_puzzle_input("data/d3.txt", "\n");
+    let rucksack_contents = util::get_puzzle_input_by_delimiter("data/d3.txt", "\n");
 
     // chunk every 3 lines together to form the elf groups
     let rucksack_groups = rucksack_contents.chunks(3);
