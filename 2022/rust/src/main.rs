@@ -5,6 +5,7 @@ mod d4;
 mod d5;
 mod d6;
 mod d7;
+mod d8;
 mod util;
 
 fn main() {
@@ -27,6 +28,8 @@ fn main() {
 
     d7::d7p1::run();
     d7::d7p2::run();
+
+    d8::d8p1::run();
 
     print!("\n");
 }
