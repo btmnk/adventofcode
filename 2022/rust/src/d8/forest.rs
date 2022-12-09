@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    thread::current,
-};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 pub struct Forest {
