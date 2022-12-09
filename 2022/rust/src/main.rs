@@ -30,6 +30,7 @@ fn main() {
     d7::d7p2::run();
 
     d8::d8p1::run();
+    d8::d8p2::run();
 
     print!("\n");
 }

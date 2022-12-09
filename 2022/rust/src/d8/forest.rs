@@ -1,4 +1,7 @@
-use std::collections::HashSet;
+use std::{
+    collections::{HashMap, HashSet},
+    thread::current,
+};
 
 #[derive(Debug)]
 pub struct Forest {
@@ -35,6 +38,78 @@ impl Forest {
         }
 
         return new_forest;
+    }
+
+    pub fn get_tree_scores(&self) -> HashMap<(usize, usize), i32> {
+        let mut tree_scores: HashMap<(usize, usize), i32> = HashMap::new();
+
+        self.horizontal
+            .iter()
+            .enumerate()
+            .for_each(|(row_index, tree_row)| {
+                tree_row.iter().enumerate().for_each(|(column_index, _)| {
+                    let key = (row_index, column_index);
+                    let next_score = Self::get_tree_score(tree_row, column_index);
+
+                    tree_scores
+                        .entry(key)
+                        .and_modify(|score| *score = *score * next_score)
+                        .or_insert(next_score);
+                })
+            });
+
+        self.vertical
+            .iter()
+            .enumerate()
+            .for_each(|(column_index, tree_row)| {
+                tree_row.iter().enumerate().for_each(|(row_index, _)| {
+                    let key = (row_index, column_index);
+                    let next_score = Self::get_tree_score(tree_row, row_index);
+
+                    tree_scores
+                        .entry(key)
+                        .and_modify(|score| *score = *score * next_score)
+                        .or_insert(next_score);
+                })
+            });
+
+        return tree_scores;
+    }
+
+    fn get_tree_score(trees: &Vec<usize>, tree_index: usize) -> i32 {
+        let target_tree = trees[tree_index];
+        let mut right_score: i32 = 0;
+        let mut left_score: i32 = 0;
+
+        for current_index in (tree_index + 1)..trees.len() {
+            if target_tree > trees[current_index] {
+                right_score += 1;
+            }
+
+            if target_tree <= trees[current_index] {
+                right_score += 1;
+                break;
+            }
+        }
+
+        if right_score == 0 {
+            return 0;
+        }
+
+        for current_index in 0..tree_index {
+            let reversed_index = tree_index - current_index - 1;
+
+            if target_tree > trees[reversed_index] {
+                left_score += 1;
+            }
+
+            if target_tree <= trees[reversed_index] {
+                left_score += 1;
+                break;
+            }
+        }
+
+        return left_score * right_score;
     }
 
     pub fn get_all_visible_trees(&self) -> usize {
