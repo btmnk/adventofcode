@@ -5,8 +5,7 @@ use super::{direction::parse_direction, rope::Rope};
 pub fn run() {
     let lines = util::get_puzzle_input_by_delimiter("data/d9.txt", "\n");
 
-    // 1 part equals 1 head and 1 tail
-    let mut rope = Rope::new(1);
+    let mut rope = Rope::new(2);
 
     lines.iter().for_each(|line| {
         let (direction_str, distance_str) = line.split_once(" ").unwrap();
@@ -17,8 +16,5 @@ pub fn run() {
         );
     });
 
-    log_result(
-        rope.rope_parts.last().unwrap().get_visited_points().len(),
-        "d9p1",
-    );
+    log_result(rope.get_visited_tail_positions().len(), "d9p1");
 }

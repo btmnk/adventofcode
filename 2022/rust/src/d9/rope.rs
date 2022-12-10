@@ -1,56 +1,63 @@
 use std::collections::HashSet;
 
-use super::{direction::Direction, point::Point, rope_part::RopePart};
+use super::{direction::Direction, knot::Knot, point::Point};
 
 pub struct Rope {
-    pub rope_parts: Vec<RopePart>,
+    pub knots: Vec<Knot>,
+    pub debug: bool,
 }
 
 impl Rope {
-    pub fn new(parts: i32) -> Rope {
-        let mut rope_parts: Vec<RopePart> = vec![];
+    pub fn new(knots: i32) -> Rope {
+        let mut knot_points: Vec<Knot> = vec![];
 
-        for _ in 0..parts {
-            rope_parts.push(RopePart::new())
+        for index in 0..knots {
+            knot_points.push(Knot::new(index));
         }
 
-        return Rope { rope_parts };
+        return Rope {
+            knots: knot_points,
+            debug: false,
+        };
     }
 
     pub fn move_head_in_direction(&mut self, direction: Direction, distance: i32) {
-        println!("\n===== Move {} steps {:?}\n", distance, direction);
+        if self.debug {
+            println!("\n===== Move {} steps {:?}\n", distance, direction);
+        }
 
         for _ in 0..distance {
-            self.rope_parts
+            self.knots
                 .clone()
                 .iter()
                 .enumerate()
                 .for_each(|(index, _)| {
                     if index == 0 {
-                        self.rope_parts[index].move_head_in_direction(direction);
+                        self.knots[index].move_in_direction(direction);
+                    } else if index == 1 {
+                        let leading_knot = self.knots[index - 1].clone();
+                        self.knots[index].follow_knot(&leading_knot);
                     } else {
-                        let previous_rope_part = self.rope_parts[index - 1].clone();
-
-                        self.rope_parts[index].move_head_to_point(
-                            previous_rope_part.tail_position.x,
-                            previous_rope_part.tail_position.y,
-                        )
+                        let leading_knot = self.knots[index - 1].clone();
+                        self.knots[index].follow_knot_aligned(&leading_knot);
                     }
-                })
-        }
+                });
 
-        self.render_rope();
+            if self.debug {
+                self.render_rope();
+            }
+        }
     }
 
     pub fn get_visited_tail_positions(&self) -> &HashSet<Point> {
-        return self.rope_parts.last().unwrap().get_visited_points();
+        return self.knots.last().unwrap().get_visited_points();
     }
 
     pub fn render_rope(&self) {
         let mut head_positions: Vec<Point> = vec![];
 
-        self.rope_parts.iter().for_each(|rope_part| {
-            head_positions.push(rope_part.current_head_position);
+        self.knots.iter().for_each(|knot| {
+            head_positions.push(knot.position);
         });
 
         let visited_points = self.get_visited_tail_positions();
@@ -83,6 +90,8 @@ impl Rope {
                     print!("{}", position_index);
                 } else if visited_points.contains(&current_point) {
                     print!("#");
+                } else if current_point.x == 0 && current_point.y == 0 {
+                    print!("s");
                 } else {
                     print!(".");
                 }
