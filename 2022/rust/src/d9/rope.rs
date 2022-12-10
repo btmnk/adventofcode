@@ -34,12 +34,9 @@ impl Rope {
                 .for_each(|(index, _)| {
                     if index == 0 {
                         self.knots[index].move_in_direction(direction);
-                    } else if index == 1 {
-                        let leading_knot = self.knots[index - 1].clone();
-                        self.knots[index].follow_knot(&leading_knot);
                     } else {
                         let leading_knot = self.knots[index - 1].clone();
-                        self.knots[index].follow_knot_aligned(&leading_knot);
+                        self.knots[index].follow_knot(&leading_knot);
                     }
                 });
 

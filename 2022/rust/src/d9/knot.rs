@@ -6,8 +6,6 @@ use super::{direction::Direction, point::Point};
 pub struct Knot {
     pub index: i32,
     pub position: Point,
-    pub last_move: Option<Point>,
-    pub previous_position: Point,
     visited_points: HashSet<Point>,
 }
 
@@ -20,15 +18,11 @@ impl Knot {
         return Knot {
             index,
             position: start,
-            last_move: None,
-            previous_position: start,
-            visited_points: HashSet::new(),
+            visited_points,
         };
     }
 
     pub fn move_in_direction(&mut self, direction: Direction) {
-        self.previous_position = self.position;
-
         match direction {
             Direction::Up => self.position.y += 1,
             Direction::Down => self.position.y -= 1,
@@ -36,67 +30,44 @@ impl Knot {
             Direction::Left => self.position.x -= 1,
         }
 
-        self.last_move = Some(self.position.clone().difference(&self.previous_position));
         self.visited_points.insert(self.position);
     }
 
     pub fn follow_knot(&mut self, leading_knot: &Knot) {
-        if !self.should_move(leading_knot) {
+        if let Some(adjacent_point) = self.get_adjacent_point(leading_knot) {
+            self.position = adjacent_point;
+        } else {
+            // nothing to do, already adjacent
             return;
         }
-
-        self.previous_position = self.position;
-
-        self.position = leading_knot.previous_position;
-        self.last_move = Some(Point {
-            x: leading_knot.previous_position.x - self.previous_position.x,
-            y: leading_knot.previous_position.y - self.previous_position.y,
-        });
 
         self.visited_points.insert(self.position);
     }
 
-    pub fn follow_knot_aligned(&mut self, leading_knot: &Knot) {
-        if !self.should_move(leading_knot) {
-            return;
+    fn get_adjacent_point(&self, leading_knot: &Knot) -> Option<Point> {
+        let distance = self.position.difference(&leading_knot.position);
+
+        // leading knot is too far away diagonally
+        if distance.abs().x == 2 && distance.abs().y == 2 {
+            return Some(Point {
+                x: leading_knot.position.x + distance.x.clamp(-1, 1),
+                y: leading_knot.position.y + distance.y.clamp(-1, 1),
+            });
+        // leading knot is too far away horizontally
+        } else if distance.abs().x == 2 {
+            return Some(Point {
+                x: leading_knot.position.x + distance.x.clamp(-1, 1),
+                y: leading_knot.position.y,
+            });
+        // leading knot is too far away vertically
+        } else if distance.abs().y == 2 {
+            return Some(Point {
+                x: leading_knot.position.x,
+                y: leading_knot.position.y + distance.y.clamp(-1, 1),
+            });
+        } else {
+            return None;
         }
-
-        let was_aligned = self.was_aligned_with(leading_knot);
-
-        self.previous_position = self.position;
-
-        if was_aligned {
-            if let Some(last_move) = leading_knot.last_move {
-                self.position.x += last_move.x;
-                self.position.y += last_move.y;
-                self.last_move = leading_knot.last_move;
-
-                self.visited_points.insert(self.position);
-
-                return;
-            }
-        }
-
-        self.position = leading_knot.previous_position;
-        self.last_move = Some(Point {
-            x: leading_knot.previous_position.x - self.previous_position.x,
-            y: leading_knot.previous_position.y - self.previous_position.y,
-        });
-
-        self.visited_points.insert(self.position);
-    }
-
-    pub fn should_move(&self, leading_knot: &Knot) -> bool {
-        let distance = leading_knot.position.difference(&self.position).abs();
-        return distance.x > 1 || distance.y > 1;
-    }
-
-    pub fn was_aligned_with(&self, leading_knot: &Knot) -> bool {
-        let previous_x_distance = leading_knot.previous_position.x - self.position.x;
-        let previous_y_distance = leading_knot.previous_position.y - self.position.y;
-
-        return previous_x_distance == 0 && previous_y_distance.abs() == 1
-            || previous_x_distance.abs() == 1 && previous_y_distance == 0;
     }
 
     pub fn get_visited_points(&self) -> &HashSet<Point> {
